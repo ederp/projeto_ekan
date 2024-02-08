@@ -1,9 +1,6 @@
 # Compiled class file
 *.class
 
-# Log file
-*.log
-
 # BlueJ files
 *.ctxt
 
@@ -22,3 +19,34 @@
 # virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
 hs_err_pid*
 replay_pid*
+
+# Configurações do Eclipse
+.settings/
+.project
+.classpath
+
+# Arquivos de configuração do Eclipse
+*.launch
+*.iml
+*.metadata/
+
+# Logs e relatórios
+*.log
+*.pot
+*.out
+*.swp
+
+# Arquivos de configuração
+.DS_Store
+*.tmp
+*.bak
+*.backup
+*.diff
+*.orig
+*.cache
+*.patch
+*.log
+*.iml
+.idea/
+*.ipr
+*.iws
