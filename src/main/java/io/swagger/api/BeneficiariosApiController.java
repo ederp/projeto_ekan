@@ -63,7 +63,7 @@ public class BeneficiariosApiController implements BeneficiariosApi {
         return ResponseEntity.status(httpStatus).body(listaBeneficiarios);
     }
 
-    public ResponseEntity<Beneficiario> beneficiarioPost(@Parameter(in = ParameterIn.DEFAULT, description = "", required=true, schema=@Schema()) @Valid @RequestBody Beneficiario body
+    public ResponseEntity<BeneficiariosBody> beneficiarioPost(@Parameter(in = ParameterIn.DEFAULT, description = "", required=true, schema=@Schema()) @Valid @RequestBody Beneficiario body
 ) {
         return ResponseEntity
         		.status(HttpStatus.CREATED)

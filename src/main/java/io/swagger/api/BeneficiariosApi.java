@@ -88,7 +88,7 @@ public interface BeneficiariosApi {
     @PostMapping(value = "/beneficiarios",
         produces = { "application/json" }, 
         consumes = { "application/json" })
-    ResponseEntity<Beneficiario> beneficiarioPost(@Parameter(in = ParameterIn.DEFAULT, description = "", required=true, schema=@Schema()) @Valid @RequestBody Beneficiario body
+    ResponseEntity<BeneficiariosBody> beneficiarioPost(@Parameter(in = ParameterIn.DEFAULT, description = "", required=true, schema=@Schema()) @Valid @RequestBody Beneficiario body
 );
 
 }

@@ -29,14 +29,14 @@ public class BeneficiarioService {
 	}
 	
 	@Transactional
-	public Beneficiario create(Beneficiario beneficiario) {
+	public BeneficiariosBody create(Beneficiario beneficiario) {
 		Beneficiario beneficiarioSaida = this.beneficiarioRepository.save(beneficiario);
 		List<Documento> listaDocumentos = beneficiarioSaida.getDocumentos();
 		for (Documento documento : listaDocumentos) {
 			documento.setBeneficiario(beneficiarioSaida);
 		}
 		this.documentoRepository.saveAll(listaDocumentos);
-		return beneficiarioSaida;
+		return BeneficiarioMapper.INSTANCE.toBeneficiariosBody(beneficiarioSaida);
 	}
 	
 	public List<BeneficiariosBody> findAll(){
