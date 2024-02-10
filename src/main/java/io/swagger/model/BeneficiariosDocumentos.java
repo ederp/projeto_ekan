@@ -1,10 +1,15 @@
 package io.swagger.model;
 
+import java.time.LocalDate;
 import java.util.Objects;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonFormat;
+
 import io.swagger.v3.oas.annotations.media.Schema;
 import org.springframework.validation.annotation.Validated;
+
+import javax.persistence.Column;
 import javax.validation.Valid;
 import javax.validation.constraints.*;
 
@@ -16,88 +21,126 @@ import javax.validation.constraints.*;
 
 
 public class BeneficiariosDocumentos   {
-  @JsonProperty("tipoDocumento")
-  private String tipoDocumento = null;
+	@JsonProperty("id")
+	private Integer id;
+	
+	@JsonProperty("tipoDocumento")
+	private String tipoDocumento;
 
-  @JsonProperty("descricao")
-  private String descricao = null;
+	@JsonProperty("descricao")
+	private String descricao;
 
-  public BeneficiariosDocumentos tipoDocumento(String tipoDocumento) {
-    this.tipoDocumento = tipoDocumento;
-    return this;
-  }
+	@JsonProperty("dataInclusao")
+	@JsonFormat(pattern="yyyy-MM-dd")
+	private LocalDate dataInclusao;
 
-  /**
-   * Get tipoDocumento
-   * @return tipoDocumento
-   **/
-  @Schema(description = "")
-  
-    public String getTipoDocumento() {
-    return tipoDocumento;
-  }
+	@JsonProperty("dataAtualizacao")
+	@JsonFormat(pattern="yyyy-MM-dd")
+	private LocalDate dataAtualizacao;
+	
+	public BeneficiariosDocumentos(Integer id, String tipoDocumento, String descricao, LocalDate dataInclusao,
+			LocalDate dataAtualizacao) {
+		super();
+		this.id = id;
+		this.tipoDocumento = tipoDocumento;
+		this.descricao = descricao;
+		this.dataInclusao = dataInclusao;
+		this.dataAtualizacao = dataAtualizacao;
+	}
 
-  public void setTipoDocumento(String tipoDocumento) {
-    this.tipoDocumento = tipoDocumento;
-  }
+	public Integer getId() {
+		return id;
+	}
 
-  public BeneficiariosDocumentos descricao(String descricao) {
-    this.descricao = descricao;
-    return this;
-  }
+	public void setId(Integer id) {
+		this.id = id;
+	}
 
-  /**
-   * Get descricao
-   * @return descricao
-   **/
-  @Schema(description = "")
-  
-    public String getDescricao() {
-    return descricao;
-  }
+	/**
+	 * Get tipoDocumento
+	 * @return tipoDocumento
+	 **/
+	@Schema(description = "")
 
-  public void setDescricao(String descricao) {
-    this.descricao = descricao;
-  }
+	public String getTipoDocumento() {
+		return tipoDocumento;
+	}
 
+	public void setTipoDocumento(String tipoDocumento) {
+		this.tipoDocumento = tipoDocumento;
+	}
 
-  @Override
-  public boolean equals(java.lang.Object o) {
-    if (this == o) {
-      return true;
-    }
-    if (o == null || getClass() != o.getClass()) {
-      return false;
-    }
-    BeneficiariosDocumentos beneficiariosDocumentos = (BeneficiariosDocumentos) o;
-    return Objects.equals(this.tipoDocumento, beneficiariosDocumentos.tipoDocumento) &&
-        Objects.equals(this.descricao, beneficiariosDocumentos.descricao);
-  }
+	/**
+	 * Get descricao
+	 * @return descricao
+	 **/
+	@Schema(description = "")
 
-  @Override
-  public int hashCode() {
-    return Objects.hash(tipoDocumento, descricao);
-  }
+	public String getDescricao() {
+		return descricao;
+	}
 
-  @Override
-  public String toString() {
-    StringBuilder sb = new StringBuilder();
-    sb.append("class BeneficiariosDocumentos {\n");
-    
-    sb.append("    tipoDocumento: ").append(toIndentedString(tipoDocumento)).append("\n");
-    sb.append("    descricao: ").append(toIndentedString(descricao)).append("\n");
-    sb.append("}");
-    return sb.toString();
-  }
+	public void setDescricao(String descricao) {
+		this.descricao = descricao;
+	}
 
-  /**
-   * Convert the given object to string with each line indented by 4 spaces
-   * (except the first line).
-   */
-  private String toIndentedString(java.lang.Object o) {
-    if (o == null) {
-      return "null";
-    }
-    return o.toString().replace("\n", "\n    ");
-  }
+	public LocalDate getDataInclusao() {
+		return dataInclusao;
+	}
+
+	public void setDataInclusao(LocalDate dataInclusao) {
+		this.dataInclusao = dataInclusao;
+	}
+
+	public LocalDate getDataAtualizacao() {
+		return dataAtualizacao;
+	}
+
+	public void setDataAtualizacao(LocalDate dataAtualizacao) {
+		this.dataAtualizacao = dataAtualizacao;
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(dataAtualizacao, dataInclusao, descricao, id, tipoDocumento);
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		BeneficiariosDocumentos other = (BeneficiariosDocumentos) obj;
+		return Objects.equals(dataAtualizacao, other.dataAtualizacao)
+				&& Objects.equals(dataInclusao, other.dataInclusao) && Objects.equals(descricao, other.descricao)
+				&& Objects.equals(id, other.id) && Objects.equals(tipoDocumento, other.tipoDocumento);
+	}
+
+	@Override
+	public String toString() {
+		StringBuilder sb = new StringBuilder();
+		sb.append("class BeneficiariosDocumentos {\n");
+
+		sb.append("    id: ").append(toIndentedString(id)).append("\n");
+		sb.append("    tipoDocumento: ").append(toIndentedString(tipoDocumento)).append("\n");
+		sb.append("    descricao: ").append(toIndentedString(descricao)).append("\n");
+		sb.append("    dataInclusao: ").append(toIndentedString(dataInclusao)).append("\n");
+		sb.append("    dataAtualizacao: ").append(toIndentedString(dataAtualizacao)).append("\n");
+		sb.append("}");
+		return sb.toString();
+	}
+
+	/**
+	 * Convert the given object to string with each line indented by 4 spaces
+	 * (except the first line).
+	 */
+	private String toIndentedString(java.lang.Object o) {
+		if (o == null) {
+			return "null";
+		}
+		return o.toString().replace("\n", "\n    ");
+	}
 }

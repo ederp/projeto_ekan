@@ -2,7 +2,10 @@ package io.swagger.api;
 
 import io.swagger.model.Beneficiario;
 import io.swagger.model.BeneficiariosBody;
+import io.swagger.model.BeneficiariosDocumentos;
 import io.swagger.model.Documento;
+import io.swagger.service.BeneficiarioService;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -15,6 +18,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
@@ -39,81 +43,48 @@ import java.util.Map;
 public class BeneficiariosApiController implements BeneficiariosApi {
 
     private static final Logger log = LoggerFactory.getLogger(BeneficiariosApiController.class);
+    
+    @Autowired
+    private BeneficiarioService beneficiarioService;
 
-    private final ObjectMapper objectMapper;
+    public BeneficiariosApiController() {
+		super();
+		// TODO Auto-generated constructor stub
+	}
 
-    private final HttpServletRequest request;
-
-    @org.springframework.beans.factory.annotation.Autowired
-    public BeneficiariosApiController(ObjectMapper objectMapper, HttpServletRequest request) {
-        this.objectMapper = objectMapper;
-        this.request = request;
-    }
-
-    public ResponseEntity<Void> beneficiariosBeneficiarioIdDelete(@Parameter(in = ParameterIn.PATH, description = "ID do beneficiário", required=true, schema=@Schema()) @PathVariable("beneficiarioId") Integer beneficiarioId
+	public ResponseEntity<Void> beneficiarioIdDelete(@Parameter(in = ParameterIn.PATH, description = "ID do beneficiário", required=true, schema=@Schema()) @PathVariable("beneficiarioId") Integer beneficiarioId
 ) {
-        String accept = request.getHeader("Accept");
-        return new ResponseEntity<Void>(HttpStatus.NOT_IMPLEMENTED);
+        HttpStatus httpStatus = (this.beneficiarioService.removeById(beneficiarioId)) ? HttpStatus.NOT_FOUND : HttpStatus.NO_CONTENT;
+        return ResponseEntity.status(httpStatus).build();
     }
 
-    public ResponseEntity<List<Documento>> beneficiariosBeneficiarioIdDocumentosGet(@Parameter(in = ParameterIn.PATH, description = "ID do beneficiário", required=true, schema=@Schema()) @PathVariable("beneficiarioId") Integer beneficiarioId
+    public ResponseEntity<List<BeneficiariosDocumentos>> beneficiarioIdDocumentosGet(@Parameter(in = ParameterIn.PATH, description = "ID do beneficiário", required=true, schema=@Schema()) @PathVariable("beneficiarioId") Integer beneficiarioId
 ) {
-        String accept = request.getHeader("Accept");
-        if (accept != null && accept.contains("application/json")) {
-            try {
-                return new ResponseEntity<List<Documento>>(objectMapper.readValue("[ {\n  \"tipoDocumento\" : \"tipoDocumento\",\n  \"dataAtualizacao\" : \"2000-01-23\",\n  \"dataInclusao\" : \"2000-01-23\",\n  \"id\" : 6,\n  \"descricao\" : \"descricao\"\n}, {\n  \"tipoDocumento\" : \"tipoDocumento\",\n  \"dataAtualizacao\" : \"2000-01-23\",\n  \"dataInclusao\" : \"2000-01-23\",\n  \"id\" : 6,\n  \"descricao\" : \"descricao\"\n} ]", List.class), HttpStatus.NOT_IMPLEMENTED);
-            } catch (IOException e) {
-                log.error("Couldn't serialize response for content type application/json", e);
-                return new ResponseEntity<List<Documento>>(HttpStatus.INTERNAL_SERVER_ERROR);
-            }
-        }
-
-        return new ResponseEntity<List<Documento>>(HttpStatus.NOT_IMPLEMENTED);
+        List<BeneficiariosDocumentos> listaDocumentos = this.beneficiarioService
+        		.findDocumentosBeneficiarioById(beneficiarioId);
+        HttpStatus httpStatus = (listaDocumentos.isEmpty()) ? HttpStatus.NOT_FOUND : HttpStatus.OK;
+        return ResponseEntity.status(httpStatus).body(listaDocumentos);
     }
 
-    public ResponseEntity<Beneficiario> beneficiariosBeneficiarioIdPut(@Parameter(in = ParameterIn.PATH, description = "ID do beneficiário", required=true, schema=@Schema()) @PathVariable("beneficiarioId") Integer beneficiarioId
+    public ResponseEntity<Beneficiario> beneficiarioIdPut(@Parameter(in = ParameterIn.PATH, description = "ID do beneficiário", required=true, schema=@Schema()) @PathVariable("beneficiarioId") Integer beneficiarioId
 ,@Parameter(in = ParameterIn.DEFAULT, description = "", required=true, schema=@Schema()) @Valid @RequestBody Beneficiario body
 ) {
-        String accept = request.getHeader("Accept");
-        if (accept != null && accept.contains("application/json")) {
-            try {
-                return new ResponseEntity<Beneficiario>(objectMapper.readValue("{\n  \"telefone\" : \"telefone\",\n  \"documentos\" : [ {\n    \"tipoDocumento\" : \"tipoDocumento\",\n    \"dataAtualizacao\" : \"2000-01-23\",\n    \"dataInclusao\" : \"2000-01-23\",\n    \"id\" : 6,\n    \"descricao\" : \"descricao\"\n  }, {\n    \"tipoDocumento\" : \"tipoDocumento\",\n    \"dataAtualizacao\" : \"2000-01-23\",\n    \"dataInclusao\" : \"2000-01-23\",\n    \"id\" : 6,\n    \"descricao\" : \"descricao\"\n  } ],\n  \"dataAtualizacao\" : \"2000-01-23\",\n  \"dataInclusao\" : \"2000-01-23\",\n  \"nome\" : \"nome\",\n  \"id\" : 0,\n  \"dataNascimento\" : \"2000-01-23\"\n}", Beneficiario.class), HttpStatus.NOT_IMPLEMENTED);
-            } catch (IOException e) {
-                log.error("Couldn't serialize response for content type application/json", e);
-                return new ResponseEntity<Beneficiario>(HttpStatus.INTERNAL_SERVER_ERROR);
-            }
-        }
-
-        return new ResponseEntity<Beneficiario>(HttpStatus.NOT_IMPLEMENTED);
+        Beneficiario beneficiario = this.beneficiarioService.update(beneficiarioId, body);
+        HttpStatus httpStatus = (beneficiario == null) ? HttpStatus.NOT_FOUND : HttpStatus.OK;
+        return ResponseEntity.status(httpStatus).body(beneficiario);
     }
 
-    public ResponseEntity<List<Beneficiario>> beneficiariosGet() {
-        String accept = request.getHeader("Accept");
-        if (accept != null && accept.contains("application/json")) {
-            try {
-                return new ResponseEntity<List<Beneficiario>>(objectMapper.readValue("[ {\n  \"telefone\" : \"telefone\",\n  \"documentos\" : [ {\n    \"tipoDocumento\" : \"tipoDocumento\",\n    \"dataAtualizacao\" : \"2000-01-23\",\n    \"dataInclusao\" : \"2000-01-23\",\n    \"id\" : 6,\n    \"descricao\" : \"descricao\"\n  }, {\n    \"tipoDocumento\" : \"tipoDocumento\",\n    \"dataAtualizacao\" : \"2000-01-23\",\n    \"dataInclusao\" : \"2000-01-23\",\n    \"id\" : 6,\n    \"descricao\" : \"descricao\"\n  } ],\n  \"dataAtualizacao\" : \"2000-01-23\",\n  \"dataInclusao\" : \"2000-01-23\",\n  \"nome\" : \"nome\",\n  \"id\" : 0,\n  \"dataNascimento\" : \"2000-01-23\"\n}, {\n  \"telefone\" : \"telefone\",\n  \"documentos\" : [ {\n    \"tipoDocumento\" : \"tipoDocumento\",\n    \"dataAtualizacao\" : \"2000-01-23\",\n    \"dataInclusao\" : \"2000-01-23\",\n    \"id\" : 6,\n    \"descricao\" : \"descricao\"\n  }, {\n    \"tipoDocumento\" : \"tipoDocumento\",\n    \"dataAtualizacao\" : \"2000-01-23\",\n    \"dataInclusao\" : \"2000-01-23\",\n    \"id\" : 6,\n    \"descricao\" : \"descricao\"\n  } ],\n  \"dataAtualizacao\" : \"2000-01-23\",\n  \"dataInclusao\" : \"2000-01-23\",\n  \"nome\" : \"nome\",\n  \"id\" : 0,\n  \"dataNascimento\" : \"2000-01-23\"\n} ]", List.class), HttpStatus.NOT_IMPLEMENTED);
-            } catch (IOException e) {
-                log.error("Couldn't serialize response for content type application/json", e);
-                return new ResponseEntity<List<Beneficiario>>(HttpStatus.INTERNAL_SERVER_ERROR);
-            }
-        }
-
-        return new ResponseEntity<List<Beneficiario>>(HttpStatus.NOT_IMPLEMENTED);
+    public ResponseEntity<List<BeneficiariosBody>> beneficiariosGet() {
+    	List<BeneficiariosBody> listaBeneficiarios = this.beneficiarioService.findAll();
+    	HttpStatus httpStatus = (listaBeneficiarios.isEmpty()) ? HttpStatus.NOT_FOUND : HttpStatus.OK; 
+        return ResponseEntity.status(httpStatus).body(listaBeneficiarios);
     }
 
-    public ResponseEntity<Beneficiario> beneficiariosPost(@Parameter(in = ParameterIn.DEFAULT, description = "", required=true, schema=@Schema()) @Valid @RequestBody BeneficiariosBody body
+    public ResponseEntity<Beneficiario> beneficiarioPost(@Parameter(in = ParameterIn.DEFAULT, description = "", required=true, schema=@Schema()) @Valid @RequestBody Beneficiario body
 ) {
-        String accept = request.getHeader("Accept");
-        if (accept != null && accept.contains("application/json")) {
-            try {
-                return new ResponseEntity<Beneficiario>(objectMapper.readValue("{\n  \"telefone\" : \"telefone\",\n  \"documentos\" : [ {\n    \"tipoDocumento\" : \"tipoDocumento\",\n    \"dataAtualizacao\" : \"2000-01-23\",\n    \"dataInclusao\" : \"2000-01-23\",\n    \"id\" : 6,\n    \"descricao\" : \"descricao\"\n  }, {\n    \"tipoDocumento\" : \"tipoDocumento\",\n    \"dataAtualizacao\" : \"2000-01-23\",\n    \"dataInclusao\" : \"2000-01-23\",\n    \"id\" : 6,\n    \"descricao\" : \"descricao\"\n  } ],\n  \"dataAtualizacao\" : \"2000-01-23\",\n  \"dataInclusao\" : \"2000-01-23\",\n  \"nome\" : \"nome\",\n  \"id\" : 0,\n  \"dataNascimento\" : \"2000-01-23\"\n}", Beneficiario.class), HttpStatus.NOT_IMPLEMENTED);
-            } catch (IOException e) {
-                log.error("Couldn't serialize response for content type application/json", e);
-                return new ResponseEntity<Beneficiario>(HttpStatus.INTERNAL_SERVER_ERROR);
-            }
-        }
-
-        return new ResponseEntity<Beneficiario>(HttpStatus.NOT_IMPLEMENTED);
+        return ResponseEntity
+        		.status(HttpStatus.CREATED)
+        		.body(this.beneficiarioService.create(body));
     }
 
 }

@@ -1,14 +1,23 @@
 package io.swagger.model;
 
+import java.time.LocalDate;
 import java.util.Objects;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import io.swagger.v3.oas.annotations.media.Schema;
-import org.threeten.bp.LocalDate;
+
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 import org.springframework.validation.annotation.Validated;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EntityListeners;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -29,33 +38,58 @@ import javax.validation.constraints.*;
 public class Documento   {
 	@Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-	@JsonProperty("id")
+	@JsonIgnore
 	private Integer id;
 
 	@Column(name = "tipo_documento")
 	@JsonProperty("tipoDocumento")
+	@NotBlank(message = "Tipo de documento inválido: tipo vazio")
+	@NotNull(message = "Tipo de documento inválido: tipo nulo")
 	private String tipoDocumento;
 
 	@Column(name = "descricao")
 	@JsonProperty("descricao")
+	@NotBlank(message = "Descrição inválida: descrição vazia")
+	@NotNull(message = "Descrição inválida: descrição nula")
 	private String descricao;
 
 	@Column(name = "data_inclusao")
 	@JsonProperty("dataInclusao")
+    @NotNull(message = "Data de inclusão inválida: data nula")
+	@JsonFormat(pattern="yyyy-MM-dd")
 	private LocalDate dataInclusao;
 
 	@Column(name = "data_atualizacao")
 	@JsonProperty("dataAtualizacao")
+    @NotNull(message = "Data de atualização de documento inválida: data nula")
+	@JsonFormat(pattern="yyyy-MM-dd")
 	private LocalDate dataAtualizacao;
 	
 	@ManyToOne
     @JoinColumn(name = "beneficiario_id", nullable = false)
+	@JsonIgnore
     private Beneficiario beneficiario;
-
-	public Documento id(Integer id) {
-		this.id = id;
-		return this;
+		
+	public Documento() {
+		super();
+		// TODO Auto-generated constructor stub
 	}
+
+	public Documento(
+			@NotBlank(message = "Tipo de documento inválido: tipo vazio") @NotNull(message = "Tipo de documento inválido: tipo nulo") String tipoDocumento,
+			@NotBlank(message = "Descrição inválida: descrição vazia") @NotNull(message = "Descrição inválida: descrição nula") String descricao,
+			@NotNull(message = "Data de inclusão inválida: data nula") LocalDate dataInclusao,
+			@NotNull(message = "Data de atualização de documento inválida: data nula") LocalDate dataAtualizacao,
+			Beneficiario beneficiario) {
+		super();
+		this.tipoDocumento = tipoDocumento;
+		this.descricao = descricao;
+		this.dataInclusao = dataInclusao;
+		this.dataAtualizacao = dataAtualizacao;
+		this.beneficiario = beneficiario;
+	}
+
+
 
 	/**
 	 * Get id
@@ -147,6 +181,10 @@ public class Documento   {
 
 	public void setDataAtualizacao(LocalDate dataAtualizacao) {
 		this.dataAtualizacao = dataAtualizacao;
+	}
+
+	public void setBeneficiario(Beneficiario beneficiario) {
+		this.beneficiario = beneficiario;
 	}
 
 	public Beneficiario getBeneficiario() {

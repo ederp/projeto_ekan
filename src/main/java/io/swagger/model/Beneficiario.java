@@ -2,20 +2,34 @@ package io.swagger.model;
 
 import java.util.Objects;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateDeserializer;
+import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateSerializer;
 import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import io.swagger.model.Documento;
 import io.swagger.v3.oas.annotations.media.Schema;
+
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
-import org.threeten.bp.LocalDate;
+
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.validation.annotation.Validated;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EntityListeners;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.validation.Valid;
@@ -32,38 +46,70 @@ import javax.validation.constraints.*;
 public class Beneficiario   {
 	@Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-	@JsonProperty("id")
+	@JsonIgnore
 	private Integer id;
 
 	@Column(name = "nome")
 	@JsonProperty("nome")
+	@NotBlank(message = "Nome inválido: nome vazio")
+	@NotNull(message = "Nome inválido: nome nulo")
 	private String nome;
 
 	@Column(name = "telefone")
 	@JsonProperty("telefone")
+	@NotBlank(message = "Telefone inválido: telefone vazio")
+	@NotNull(message = "Telefone inválido: telefone nulo")
+	@Pattern(regexp = "\\([1-9]\\d\\)\\s9?\\d{4}-\\d{4}", message = "Número de telefone inválido")
 	private String telefone;
 
 	@Column(name = "data_nascimento")
 	@JsonProperty("dataNascimento")
+	@NotNull(message = "Data de nascimento inválida: data nula")
+	@JsonFormat(pattern="yyyy-MM-dd")
 	private LocalDate dataNascimento;
 
 	@Column(name = "data_inclusao")
 	@JsonProperty("dataInclusao")
+	@NotNull(message = "Data de inclusão de beneficiário inválida: data nula")
+	@JsonFormat(pattern="yyyy-MM-dd")
 	private LocalDate dataInclusao;
 
 	@Column(name = "data_atualizacao")
 	@JsonProperty("dataAtualizacao")
+	@NotNull(message = "Data de atualização de beneficiário inválida: data nula")
+	@JsonFormat(pattern="yyyy-MM-dd")
 	private LocalDate dataAtualizacao;
 
-	@OneToMany(mappedBy = "beneficiario", cascade = CascadeType.ALL)
+	@OneToMany(mappedBy = "beneficiario", cascade = CascadeType.DETACH)
 	@JsonProperty("documentos")
 	@Valid
 	private List<Documento> documentos;
-
-	public Beneficiario id(Integer id) {
-		this.id = id;
-		return this;
+	
+	public Beneficiario() {
+		super();
+		// TODO Auto-generated constructor stub
 	}
+
+	public Beneficiario(
+			@NotBlank(message = "Nome inválido: nome vazio") @NotNull(message = "Nome inválido: nome nulo") String nome,
+			@NotBlank(message = "Telefone inválido: telefone vazio") @NotNull(message = "Telefone inválido: telefone nulo") @Pattern(regexp = "\\([1-9]\\d\\)\\s9?\\d{4}-\\d{4}", message = "Número de telefone inválido") String telefone,
+			@NotBlank(message = "Data de nascimento inválida: data vazia") @NotNull(message = "Data de nascimento inválida: data nula") LocalDate dataNascimento,
+			@NotBlank(message = "Data de inclusão de beneficiário inválida: data vazia") @NotNull(message = "Data de inclusão de beneficiário inválida: data nula") LocalDate dataInclusao,
+			@NotBlank(message = "Data de atualização de beneficiário inválida: data vazia") @NotNull(message = "Data de atualização de beneficiário inválida: data nula") LocalDate dataAtualizacao,
+			@Valid List<Documento> documentos) {
+		super();
+		this.nome = nome;
+		this.telefone = telefone;
+		this.dataNascimento = dataNascimento;
+		this.dataInclusao = dataInclusao;
+		this.dataAtualizacao = dataAtualizacao;
+		this.documentos = documentos;
+		for (Documento documento : documentos) {
+	        documento.setBeneficiario(this);
+	    }
+	}
+
+
 
 	/**
 	 * Get id
@@ -176,19 +222,7 @@ public class Beneficiario   {
 	public void setDataAtualizacao(LocalDate dataAtualizacao) {
 		this.dataAtualizacao = dataAtualizacao;
 	}
-
-	public Beneficiario documentos(List<Documento> documentos) {
-		this.documentos = documentos;
-		return this;
-	}
-
-	public Beneficiario addDocumentosItem(Documento documentosItem) {
-		if (this.documentos == null) {
-			this.documentos = new ArrayList<Documento>();
-		}
-		this.documentos.add(documentosItem);
-		return this;
-	}
+	
 
 	/**
 	 * Get documentos
@@ -202,6 +236,11 @@ public class Beneficiario   {
 
 	public void setDocumentos(List<Documento> documentos) {
 		this.documentos = documentos;
+	}
+	
+	public void addDocumento(Documento documento) {
+		documento.setBeneficiario(this);
+		this.documentos.add(documento);
 	}
 
 
