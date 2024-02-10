@@ -27,7 +27,7 @@ public class BeneficiarioControllerTest {
 	
 	@BeforeEach
     public void setup() throws Exception {
-        // Adicione o beneficiário antes de cada teste
+        // Adiciona o beneficiário antes de cada teste
         String requestBody = "{\n" +
                 "  \"nome\": \"José da Silva\",\n" +
                 "  \"telefone\": \"(34) 99248-4600\",\n" +
@@ -56,6 +56,7 @@ public class BeneficiarioControllerTest {
         beneficiarioId = JsonPath.parse(content).read("$.id", Integer.class);
     }
 	
+	//Cadastro do beneficiário junto com seus documentos
 	@Test
     public void testAddBeneficiario() throws Exception {
         String requestBody = "{\n" +
@@ -81,6 +82,7 @@ public class BeneficiarioControllerTest {
                 .andExpect(MockMvcResultMatchers.jsonPath("$.nome").value("José da Silva"));
     }
 	
+	//Lista todos os beneficiários cadastrados;
 	@Test
     public void testGetAllBeneficiarios() throws Exception {
         mockMvc.perform(MockMvcRequestBuilders.get("/beneficiarios")
@@ -89,6 +91,7 @@ public class BeneficiarioControllerTest {
                 .andExpect(MockMvcResultMatchers.jsonPath("$").isArray());
     }
 	
+	//Lista todos os documentos de um beneficiário a partir de seu id
 	@Test
     public void testGetDocumentosByBeneficiarioIdExistente() throws Exception {
         mockMvc.perform(MockMvcRequestBuilders.get("/beneficiarios/" + beneficiarioId + "/documentos")
@@ -104,9 +107,9 @@ public class BeneficiarioControllerTest {
                 .andExpect(MockMvcResultMatchers.status().isNotFound());
     }
 	
+	//Atualiza os dados cadastrais de um beneficiário
 	@Test
 	public void testUpdateBeneficiarioComSucesso() throws Exception {
-	    // Execute o método setup para adicionar um beneficiário inicial
 	    setup();
 
 	    // JSON de atualização
@@ -161,16 +164,15 @@ public class BeneficiarioControllerTest {
 	            .andExpect(MockMvcResultMatchers.status().isNotFound());
 	}
 
+	//Remove um beneficiário
 	@Test
 	public void testDeleteBeneficiarioExistente() throws Exception {
-	    // Certifique-se de que beneficiarioId seja um ID existente no seu contexto
 	    mockMvc.perform(MockMvcRequestBuilders.delete("/beneficiarios/{id}", beneficiarioId))
 	            .andExpect(MockMvcResultMatchers.status().isNoContent());
 	}
 
 	@Test
 	public void testDeleteBeneficiarioInexistente() throws Exception {
-	    // Use um ID que não exista no seu contexto
 	    mockMvc.perform(MockMvcRequestBuilders.delete("/beneficiarios/{id}", 9999))
 	            .andExpect(MockMvcResultMatchers.status().isNotFound());
 	}
