@@ -3,15 +3,11 @@ package io.swagger.model;
 import java.time.LocalDate;
 import java.util.Objects;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonFormat;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import org.springframework.validation.annotation.Validated;
 
-import javax.persistence.Column;
-import javax.validation.Valid;
-import javax.validation.constraints.*;
 
 /**
  * BeneficiariosDocumentos

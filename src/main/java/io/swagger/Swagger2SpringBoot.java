@@ -31,7 +31,6 @@ public class Swagger2SpringBoot implements CommandLineRunner {
 
     @Configuration
     static class CustomDateConfig extends WebMvcConfigurerAdapter {
-        @Override
         public void addFormatters(FormatterRegistry registry) {
             registry.addConverter(new LocalDateConverter("yyyy-MM-dd"));
             registry.addConverter(new LocalDateTimeConverter("yyyy-MM-dd'T'HH:mm:ss.SSS"));

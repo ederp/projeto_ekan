@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.Optional;
 
 import javax.transaction.Transactional;
-import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -49,7 +48,6 @@ public class BeneficiarioService {
 		return listaBeneficiariosSaida;
 	}
 	
-	
 	private Optional<Beneficiario> findBeneficiarioById(Integer id) {
 		return this.beneficiarioRepository.findById(id);
 	}
@@ -81,17 +79,49 @@ public class BeneficiarioService {
 			
 			Beneficiario beneficiarioSaida = this.beneficiarioRepository.save(beneficiarioUpdate);
 			
-			List<Documento> listaDocumentos = beneficiarioSaida.getDocumentos();
-			listaDocumentos.removeAll(listaDocumentos);
-			listaDocumentos.addAll(beneficiario.getDocumentos());
-			this.documentoRepository.saveAll(listaDocumentos);
+			List<Documento> listaDocumentosAntigos = beneficiarioSaida.getDocumentos();
+			List<Documento> listaDocumentosParaAtualizar = beneficiario.getDocumentos();
+			List<Documento> listaDocumentosAtualizados = new ArrayList<>();
 			
-			return beneficiarioSaida;
-
+			//atualiza os documentos existentes e adiciona os novos
+			if (listaDocumentosParaAtualizar.size() > listaDocumentosAntigos.size()) {
+				for(int i = 0; i < listaDocumentosAntigos.size(); i++) {
+					this.updateDocumento(listaDocumentosAntigos.get(i).getId(), listaDocumentosParaAtualizar.get(i));
+					listaDocumentosAtualizados.add(listaDocumentosParaAtualizar.get(i));
+				}
+				listaDocumentosParaAtualizar.removeAll(listaDocumentosAtualizados);
+				for (Documento documento : listaDocumentosParaAtualizar) {
+					documento.setBeneficiario(beneficiarioSaida);
+				}
+				this.documentoRepository.saveAll(listaDocumentosParaAtualizar);
+			} //atualiza os documentos existentes e exclui os demais 
+			else if (listaDocumentosParaAtualizar.size() < listaDocumentosAntigos.size()) {
+				for(int i = 0; i < listaDocumentosParaAtualizar.size(); i++) {
+					this.updateDocumento(listaDocumentosAntigos.get(i).getId(), listaDocumentosParaAtualizar.get(i));
+					listaDocumentosAtualizados.add(listaDocumentosAntigos.get(i));
+				}
+				listaDocumentosAntigos.removeAll(listaDocumentosAtualizados);
+				this.documentoRepository.deleteAll(listaDocumentosAntigos);
+			} //somente atualiza os documentos existentes 
+			else {
+				for(int i = 0; i < listaDocumentosAntigos.size(); i++) {
+					this.updateDocumento(listaDocumentosAntigos.get(i).getId(), listaDocumentosParaAtualizar.get(i));
+				}
+			}
+			return this.findBeneficiarioById(id).get();
 		}
 		return null;
 	}
 	
+	private void updateDocumento(Integer id, Documento documento) {
+		Documento documentoUpdate = this.documentoRepository.findById(id).get();
+		
+		documentoUpdate.setTipoDocumento(documento.getTipoDocumento());
+		documentoUpdate.setDescricao(documento.getDescricao());
+		documentoUpdate.setDataInclusao(documento.getDataInclusao());
+		documentoUpdate.setDataAtualizacao(documento.getDataAtualizacao());
+	}
+		
 	@Transactional
 	public boolean removeById(Integer id) {
 		Optional<Beneficiario> optBeneficiario = this.findBeneficiarioById(id);
@@ -104,5 +134,4 @@ public class BeneficiarioService {
 		}
 		return false;
 	}
-	
 }
