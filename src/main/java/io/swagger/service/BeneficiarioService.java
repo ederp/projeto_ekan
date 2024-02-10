@@ -96,6 +96,9 @@ public class BeneficiarioService {
 	public boolean removeById(Integer id) {
 		Optional<Beneficiario> optBeneficiario = this.findBeneficiarioById(id);
 		if(! optBeneficiario.isEmpty()) {
+			for (Documento doc : optBeneficiario.get().getDocumentos()) {
+				this.documentoRepository.delete(doc);
+			}
 			this.beneficiarioRepository.deleteById(id);
 			return true;
 		}

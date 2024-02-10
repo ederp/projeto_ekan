@@ -54,7 +54,7 @@ public class BeneficiariosApiController implements BeneficiariosApi {
 
 	public ResponseEntity<Void> beneficiarioIdDelete(@Parameter(in = ParameterIn.PATH, description = "ID do beneficiário", required=true, schema=@Schema()) @PathVariable("beneficiarioId") Integer beneficiarioId
 ) {
-        HttpStatus httpStatus = (this.beneficiarioService.removeById(beneficiarioId)) ? HttpStatus.NOT_FOUND : HttpStatus.NO_CONTENT;
+        HttpStatus httpStatus = (this.beneficiarioService.removeById(beneficiarioId)) ? HttpStatus.NO_CONTENT : HttpStatus.NOT_FOUND;
         return ResponseEntity.status(httpStatus).build();
     }
 
